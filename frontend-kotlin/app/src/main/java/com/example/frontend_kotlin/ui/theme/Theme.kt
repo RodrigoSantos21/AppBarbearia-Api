@@ -1,38 +1,73 @@
 package com.example.frontend_kotlin.ui.theme
 
-import android.app.Activity
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 
-// Definição de cores (Estilo Barbearia: Marrom, Preto, Dourado)
+// ─── Cores ───────────────────────────────────────────────────────────────────
+val Gold        = Color(0xFFD4AF37)
+val GoldLight   = Color(0xFFF0D060)
+val GoldDark    = Color(0xFF9C7E1A)
+val Carbon      = Color(0xFF0D0D0D)
+val Surface1    = Color(0xFF161616)
+val Surface2    = Color(0xFF1F1F1F)
+val Surface3    = Color(0xFF2A2A2A)
+val OnSurface   = Color(0xFFEEEEEE)
+val OnSurface2  = Color(0xFF9E9E9E)
+val ErrorRed    = Color(0xFFCF6679)
+
+// ─── Tipografia ───────────────────────────────────────────────────────────────
+// Usando fontes do sistema para não precisar adicionar assets manualmente.
+// Substitua por fontes customizadas (ex: Playfair Display) se desejar.
+val AppTypography = Typography(
+    displayLarge = TextStyle(
+        fontWeight = FontWeight.Bold,
+        fontSize = 32.sp,
+        letterSpacing = 1.sp,
+        color = Gold
+    ),
+    titleLarge = TextStyle(
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 20.sp,
+        color = OnSurface
+    ),
+    bodyMedium = TextStyle(
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp,
+        color = OnSurface2
+    ),
+    labelMedium = TextStyle(
+        fontWeight = FontWeight.Medium,
+        fontSize = 12.sp,
+        letterSpacing = 1.2.sp,
+        color = Gold
+    )
+)
+
+// ─── ColorScheme ─────────────────────────────────────────────────────────────
 private val DarkColorScheme = darkColorScheme(
-    primary = Color(0xFFD4AF37), // Dourado
-    secondary = Color(0xFF8B4513), // Marrom
-    tertiary = Color(0xFF333333)   // Cinza Escuro
+    primary            = Gold,
+    onPrimary          = Carbon,
+    primaryContainer   = GoldDark,
+    secondary          = GoldLight,
+    background         = Carbon,
+    surface            = Surface1,
+    surfaceVariant     = Surface2,
+    onBackground       = OnSurface,
+    onSurface          = OnSurface,
+    onSurfaceVariant   = OnSurface2,
+    error              = ErrorRed
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = Color(0xFF8B4513),   // Marrom
-    secondary = Color(0xFFD4AF37), // Dourado
-    tertiary = Color(0xFF000000),
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-)
-
+// ─── Theme Composable ─────────────────────────────────────────────────────────
 @Composable
-fun BarbeariaTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
-) {
-    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
-
+fun BarbeariaTheme(content: @Composable () -> Unit) {
     MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography, // Isso usa o arquivo Typography.kt que deve estar na mesma pasta
-        content = content
+        colorScheme = DarkColorScheme,
+        typography  = AppTypography,
+        content     = content
     )
 }

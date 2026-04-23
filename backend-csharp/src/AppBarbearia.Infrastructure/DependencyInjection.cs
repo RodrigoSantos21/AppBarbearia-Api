@@ -20,18 +20,18 @@ public static class DependencyInjection
     {
         // ── EF Core ────────────────────────────────────────────────────────
         services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlServer(
+            options.UseNpgsql(
                 configuration.GetConnectionString("DefaultConnection"),
                 b => b.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)));
 
         // ── Repositories ───────────────────────────────────────────────────
-        services.AddScoped<IUserRepository,        UserRepository>();
-        services.AddScoped<IServiceRepository,     ServiceRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IServiceRepository, ServiceRepository>();
         services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 
         // ── Services ───────────────────────────────────────────────────────
         services.AddScoped<IPasswordHasher, PasswordHasher>();
-        services.AddScoped<ITokenService,   JwtTokenService>();
+        services.AddScoped<ITokenService, JwtTokenService>();
 
         // ── JWT ────────────────────────────────────────────────────────────
         var jwtSection = configuration.GetSection(JwtSettings.SectionName);
@@ -41,21 +41,21 @@ public static class DependencyInjection
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme    = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         })
         .AddJwtBearer(options =>
         {
             options.TokenValidationParameters = new TokenValidationParameters
             {
-                ValidateIssuer           = true,
-                ValidateAudience         = true,
-                ValidateLifetime         = true,
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer              = jwtSettings.Issuer,
-                ValidAudience            = jwtSettings.Audience,
-                IssuerSigningKey         = new SymmetricSecurityKey(
+                ValidIssuer = jwtSettings.Issuer,
+                ValidAudience = jwtSettings.Audience,
+                IssuerSigningKey = new SymmetricSecurityKey(
                     Encoding.UTF8.GetBytes(jwtSettings.Secret)),
-                ClockSkew                = TimeSpan.Zero
+                ClockSkew = TimeSpan.Zero
             };
         });
 

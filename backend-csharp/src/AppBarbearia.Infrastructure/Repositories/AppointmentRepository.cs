@@ -17,13 +17,14 @@ public class AppointmentRepository(AppDbContext context)
             .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
 
     public async Task<IEnumerable<Appointment>> GetByClientAsync(Guid clientId, CancellationToken cancellationToken = default)
-        => await DbSet
-            .AsNoTracking()
-            .Include(a => a.Barber)
-            .Include(a => a.Service)
-            .Where(a => a.ClientId == clientId)
-            .OrderByDescending(a => a.ScheduledAt)
-            .ToListAsync(cancellationToken);
+    => await DbSet
+        .AsNoTracking()
+        .Include(a => a.Client)   // ← ADICIONE ESTA LINHA
+        .Include(a => a.Barber)
+        .Include(a => a.Service)
+        .Where(a => a.ClientId == clientId)
+        .OrderByDescending(a => a.ScheduledAt)
+        .ToListAsync(cancellationToken);
 
     public async Task<IEnumerable<Appointment>> GetByBarberAsync(Guid barberId, CancellationToken cancellationToken = default)
         => await DbSet
@@ -37,7 +38,7 @@ public class AppointmentRepository(AppDbContext context)
     public async Task<IEnumerable<Appointment>> GetByBarberAndDateAsync(Guid barberId, DateTime date, CancellationToken cancellationToken = default)
     {
         var startOfDay = date.Date;
-        var endOfDay   = startOfDay.AddDays(1);
+        var endOfDay = startOfDay.AddDays(1);
 
         return await DbSet
             .AsNoTracking()
