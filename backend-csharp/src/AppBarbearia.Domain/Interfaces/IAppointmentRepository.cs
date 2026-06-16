@@ -10,4 +10,9 @@ public interface IAppointmentRepository : IRepository<Appointment>
     Task<IEnumerable<Appointment>> GetByBarberAsync(Guid barberId, CancellationToken cancellationToken = default);
     Task<IEnumerable<Appointment>> GetByBarberAndDateAsync(Guid barberId, DateTime date, CancellationToken cancellationToken = default);
     Task<bool> HasConflictAsync(Guid barberId, DateTime scheduledAt, int durationMinutes, Guid? excludeId = null, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Appointment>> GetByBarberAndDateRangeAsync(
+    Guid barberId, DateTime start, DateTime end, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Appointment>> GetFinishedByDateRangeAsync(
+    DateTime start, DateTime end, CancellationToken cancellationToken = default);
+
 }

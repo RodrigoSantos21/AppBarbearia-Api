@@ -73,4 +73,29 @@ public class AppointmentRepository(AppDbContext context)
              && proposedEnd > a.ScheduledAt,
             cancellationToken);
     }
+
+    public async Task<IEnumerable<Appointment>> GetByBarberAndDateRangeAsync(
+    Guid barberId, DateTime start, DateTime end, CancellationToken cancellationToken = default)
+    => await DbSet
+        .AsNoTracking()
+        .Include(a => a.Service)
+        .Where(a => a.BarberId == barberId
+                 && a.ScheduledAt >= start
+                 && a.ScheduledAt <= end)
+        .OrderBy(a => a.ScheduledAt)
+        .ToListAsync(cancellationToken);
+
+    /// <summary>
+    /// Busca todos os agendamentos FINALIZADOS (status = Finished) num intervalo de datas,
+    /// incluindo o serviço — usado para relatório de faturamento.
+    /// </summary>
+    public async Task<IEnumerable<Appointment>> GetFinishedByDateRangeAsync(
+        DateTime start, DateTime end, CancellationToken cancellationToken = default)
+        => await DbSet
+            .AsNoTracking()
+            .Include(a => a.Service)
+            .Where(a => a.Status == AppointmentStatus.Finished
+                     && a.ScheduledAt >= start
+                     && a.ScheduledAt <= end)
+            .ToListAsync(cancellationToken);
 }

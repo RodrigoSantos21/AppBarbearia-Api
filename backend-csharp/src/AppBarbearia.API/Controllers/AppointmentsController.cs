@@ -20,7 +20,7 @@ public class AppointmentsController(IMediator mediator) : ControllerBase
         if (userId is null) return Unauthorized();
 
         var command = new CreateAppointmentCommand(userId.Value, request.BarberId, request.ServiceId, request.ScheduledAt);
-        var result  = await mediator.Send(command, ct);
+        var result = await mediator.Send(command, ct);
 
         return result.IsSuccess
             ? CreatedAtAction(nameof(GetById), new { id = result.Value }, new { id = result.Value })
@@ -72,7 +72,7 @@ public class AppointmentsController(IMediator mediator) : ControllerBase
         if (userId is null) return Unauthorized();
 
         var targetDate = date?.Date ?? DateTime.UtcNow.Date;
-        var result     = await mediator.Send(new GetBarberAgendaQuery(userId.Value, targetDate), ct);
+        var result = await mediator.Send(new GetBarberAgendaQuery(userId.Value, targetDate), ct);
         return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
     }
 
@@ -81,7 +81,7 @@ public class AppointmentsController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> GetBarberAgenda(Guid barberId, [FromQuery] DateTime? date, CancellationToken ct = default)
     {
         var targetDate = date?.Date ?? DateTime.UtcNow.Date;
-        var result     = await mediator.Send(new GetBarberAgendaQuery(barberId, targetDate), ct);
+        var result = await mediator.Send(new GetBarberAgendaQuery(barberId, targetDate), ct);
         return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
     }
 
@@ -113,6 +113,25 @@ public class AppointmentsController(IMediator mediator) : ControllerBase
         var sub = User.FindFirstValue(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)
                ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
         return Guid.TryParse(sub, out var id) ? id : null;
+    }
+
+    [HttpGet("reports/weekly")]
+    [Authorize(Roles = "Barber,Admin")]
+    public async Task<IActionResult> GetWeeklyReport([FromQuery] DateOnly? weekStart, CancellationToken ct = default)
+    {
+        var userId = GetCurrentUserId();
+        if (userId is null) return Unauthorized();
+
+        var result = await mediator.Send(new GetBarberWeeklyReportQuery(userId.Value, weekStart), ct);
+        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+    }
+
+    [HttpGet("reports/monthly-revenue")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetMonthlyRevenueReport([FromQuery] int? year, [FromQuery] int? month, CancellationToken ct = default)
+    {
+        var result = await mediator.Send(new GetMonthlyRevenueReportQuery(year, month), ct);
+        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
     }
 }
 

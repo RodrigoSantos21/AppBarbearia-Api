@@ -49,7 +49,7 @@ public class AuthController(IMediator mediator) : ControllerBase
         if (userId is null) return Unauthorized();
 
         var command = new UpdateProfileCommand(userId.Value, request.FullName, request.Phone);
-        var result  = await mediator.Send(command, ct);
+        var result = await mediator.Send(command, ct);
         return result.IsSuccess ? NoContent() : BadRequest(result.Error);
     }
 
@@ -61,7 +61,7 @@ public class AuthController(IMediator mediator) : ControllerBase
         if (userId is null) return Unauthorized();
 
         var command = new ChangePasswordCommand(userId.Value, request.CurrentPassword, request.NewPassword, request.ConfirmNewPassword);
-        var result  = await mediator.Send(command, ct);
+        var result = await mediator.Send(command, ct);
         return result.IsSuccess ? NoContent() : BadRequest(result.Error);
     }
 
@@ -84,6 +84,23 @@ public class AuthController(IMediator mediator) : ControllerBase
     }
 
 
+    [HttpGet("users")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetAllUsers([FromQuery] string? role, CancellationToken ct = default)
+    {
+        var result = await mediator.Send(new GetAllUsersQuery(role), ct);
+        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+    }
+
+    [HttpPut("users/{id:guid}/status")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> SetUserActiveStatus(Guid id, [FromBody] SetUserActiveStatusRequest request, CancellationToken ct = default)
+    {
+        var command = new SetUserActiveStatusCommand(id, request.IsActive);
+        var result = await mediator.Send(command, ct);
+        return result.IsSuccess ? NoContent() : BadRequest(result.Error);
+    }
+
     private Guid? GetCurrentUserId()
     {
         var sub = User.FindFirstValue(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)
@@ -95,3 +112,5 @@ public class AuthController(IMediator mediator) : ControllerBase
 
 public record UpdateProfileRequest(string FullName, string Phone);
 public record ChangePasswordRequest(string CurrentPassword, string NewPassword, string ConfirmNewPassword);
+
+public record SetUserActiveStatusRequest(bool IsActive);
