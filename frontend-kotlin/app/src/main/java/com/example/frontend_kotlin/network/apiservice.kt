@@ -113,6 +113,46 @@ data class AppointmentDto(
     val updatedAt: String?
 )
 
+data class DailyOccupancyDto(
+    val date: String,
+    val dayOfWeek: String,
+    val finishedCount: Int,
+    val cancelledCount: Int,
+    val confirmedCount: Int,
+    val pendingCount: Int
+)
+
+data class BarberWeeklyReportDto(
+    val barberId: String,
+    val barberName: String,
+    val weekStart: String,
+    val weekEnd: String,
+    val totalFinished: Int,
+    val totalCancelled: Int,
+    val totalConfirmed: Int,
+    val totalPending: Int,
+    val completionRate: Double,
+    val totalRevenue: Double,
+    val dailyBreakdown: List<DailyOccupancyDto>
+)
+
+data class TopServiceDto(
+    val serviceId: String,
+    val serviceName: String,
+    val timesPerformed: Int,
+    val totalRevenue: Double
+)
+
+data class MonthlyRevenueReportDto(
+    val year: Int,
+    val month: Int,
+    val monthName: String,
+    val totalRevenue: Double,
+    val totalAppointments: Int,
+    val averageTicket: Double,
+    val starService: TopServiceDto?
+)
+
 
 /** POST /api/appointments/{id}/cancel */
 data class CancelRequest(val reason: String)
@@ -200,6 +240,21 @@ interface BarbeariaApi {
         @Header("Authorization") token: String
     ): Response<List<AppointmentDto>>
 
+    /** GET /api/appointments/reports/weekly?weekStart=yyyy-MM-dd  [Authorize(Roles="Barber,Admin")] */
+    @GET("appointments/reports/weekly")
+    suspend fun getWeeklyReport(
+        @Header("Authorization") token: String,
+        @Query("weekStart") weekStart: String? = null
+    ): Response<BarberWeeklyReportDto>
+
+    /** GET /api/appointments/reports/monthly-revenue?year=2026&month=4  [Authorize(Roles="Admin")] */
+    @GET("appointments/reports/monthly-revenue")
+    suspend fun getMonthlyRevenueReport(
+        @Header("Authorization") token: String,
+        @Query("year") year: Int? = null,
+        @Query("month") month: Int? = null
+    ): Response<MonthlyRevenueReportDto>
+
     /** GET /api/appointments/{id}  [Authorize] */
     @GET("appointments/{id}")
     suspend fun getAppointmentById(
@@ -248,7 +303,7 @@ interface BarbeariaApi {
 }
 
 object RetrofitClient {
-    private const val BASE_URL = "http://192.168.0.39:5000/api/"
+    private const val BASE_URL = "http://192.168.0.7:50770/api/"
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY   // remova em produção

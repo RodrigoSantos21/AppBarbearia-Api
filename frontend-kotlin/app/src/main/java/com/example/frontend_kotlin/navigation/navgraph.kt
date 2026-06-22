@@ -16,6 +16,7 @@ import com.example.frontend_kotlin.ui.booking.BookingScreen
 import com.example.frontend_kotlin.ui.booking.BookingSuccessScreen
 import com.example.frontend_kotlin.ui.booking.BookingViewModel
 import com.example.frontend_kotlin.ui.home.HomeClientScreen
+import com.example.frontend_kotlin.ui.reports.ReportsScreen
 
 object Routes {
     const val LOGIN           = "login"
@@ -25,6 +26,7 @@ object Routes {
     const val BOOKING         = "booking"
     const val BOOKING_SUCCESS = "booking_success"
     const val MY_APPOINTMENTS = "my_appointments"
+    const val REPORTS         = "reports"
 }
 
 @Composable
@@ -112,6 +114,7 @@ fun AppNavGraph() {
                         appNavController.navigate(Routes.BOOKING)
                     },
                     onViewAppointments = { appNavController.navigate(Routes.MY_APPOINTMENTS) },
+                    onViewReports      = { appNavController.navigate(Routes.REPORTS) },
                     onLogout           = onLogout
                 )
             }
@@ -154,6 +157,14 @@ fun AppNavGraph() {
                 MyAppointmentsScreen(
                     token  = SessionManager.bearer(ctx),
                     onBack = { appNavController.popBackStack() }
+                )
+            }
+
+            composable(Routes.REPORTS) {
+                ReportsScreen(
+                    token    = SessionManager.bearer(ctx),
+                    userRole = userRole,
+                    onBack   = { appNavController.popBackStack() }
                 )
             }
         }

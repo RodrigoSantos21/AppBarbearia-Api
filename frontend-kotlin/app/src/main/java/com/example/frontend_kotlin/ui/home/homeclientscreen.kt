@@ -19,6 +19,7 @@ fun HomeClientScreen(
     userName: String,
     onNewBooking: () -> Unit,
     onViewAppointments: () -> Unit,
+    onViewReports: (() -> Unit)? = null,
     onLogout: () -> Unit
 ) {
     Column(
@@ -85,6 +86,45 @@ fun HomeClientScreen(
         }
 
         Spacer(Modifier.height(16.dp))
+
+        if (onViewReports != null) {
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = Surface2),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Outlined.BarChart,
+                            contentDescription = null,
+                            tint = Gold,
+                            modifier = Modifier.size(28.dp)
+                        )
+                        Spacer(Modifier.width(12.dp))
+                        Column {
+                            Text("Relatorios", style = MaterialTheme.typography.titleLarge)
+                            Text("Desempenho e faturamento", style = MaterialTheme.typography.bodyMedium)
+                        }
+                    }
+                    IconButton(onClick = onViewReports) {
+                        Icon(
+                            imageVector = Icons.Outlined.ChevronRight,
+                            contentDescription = "Ver relatorios",
+                            tint = Gold
+                        )
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(16.dp))
+        }
 
         // ── Card histórico ────────────────────────────────────────────────────
         Card(
